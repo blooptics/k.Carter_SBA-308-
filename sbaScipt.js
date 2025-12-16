@@ -85,44 +85,31 @@ function getLearnerData(course, ag, submissions) {
     /////////////////Submission////////////////////
     for (let i = 0; i < submissions.length; i++) {
         let submission = submissions[i];
-        let learnerId = submission.learner_id;
-        console.log(submission); // Grabbing all of submisstion
+        const learnerId = submission.learner_id;
+        // console.log(submission); // Grabbing all of submisstion
 
         let assignment = null;
         for (let j = 0; j < ag.assignments.length; j++) {
             if (ag.assignments[j].id === submission.assignment_id) {
                 assignment = ag.assignments[j]
+                break;
             }
-
-
-            // Tried using try/catch
-            // try {
-            //     if (assignment === null) {
-            //         throw new Error("Assignment not found")
-            //     }
-            // } catch (error) {
-            //     console.log("Something occured:", error.message);
-            // }
-            //  console.log(assignment);
         }
-
-        if (assignment.due_at > todayDate) {
-            continue;
-        }
-        // console.log(assignment.due_at);
+        if (assignment === null) continue;
+        if (assignment.due_at > todayDate) continue;
 
         if (assignment.points_possible === 0) {
             console.log("Points possible cant be 0");
         }
-    }
 
-    if (!learners[learnerId]) {
-        learners[learnerId] = {
-            id: learnerId,
-            tEarned: 0,
-            tPossible: 0
-        };
 
+        if (!learners[learnerId]) {
+            learners[learnerId] = {
+                id: learnerId,
+                tEarned: 0,
+                tPossible: 0
+            };
+        }
         //Penalty scores
         let score = submission.submission.score;
 
@@ -134,32 +121,30 @@ function getLearnerData(course, ag, submissions) {
             score = 0;
         }
 
-        // Figuring out average
+        // console.log("This is score:", score);
 
+        // Figuring out average
+        learners[learnerId][assignment.id] =
+            score / assignment.points_possible;
+
+        learners[learnerId].tEarned += score;
+        learners[learnerId].tPossible += assignment.points_possible;
+
+        const result = [];
+        for (const learnerId in learners) {
+            const learner = learners[learnerId];
+
+            learner.avg = learner.tEarned / learner.tPossible;
+
+            delete learner.tEarned;
+            delete learner.tPossible;
+
+            result.push(learner);
+        }
+        return result;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const result = [];
-    return result;
-
+    return [];
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
