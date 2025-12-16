@@ -93,20 +93,27 @@ function getLearnerData(course, ag, submissions) {
         if (ag.assignments[j].id === submission.assignment_id) {
             assignment = ag.assignments[j]
         }
-        console.log(assignment);
+        
 
         // Tried using try/catch
-        try {
-            if (assignment === null) {
-                throw new Error("Assignment not found")
-            }
-        } catch (error) {
-            console.log("Something occured:", error.message);
-        }
-        
+        // try {
+        //     if (assignment === null) {
+        //         throw new Error("Assignment not found")
+        //     }
+        // } catch (error) {
+        //     console.log("Something occured:", error.message);
+        // }
+        //  console.log(assignment);
     }
 
-    
+    if (assignment.due_at > todayDate) {
+        continue;
+    }
+    // console.log(assignment.due_at);
+
+    if (assignment.points_possible ===0) {
+        console.log("Points possible cant be 0");
+    }
   }
   
   
