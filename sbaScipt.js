@@ -88,8 +88,24 @@ function getLearnerData(course, ag, submissions) {
     let learnerId = submission.learner_id;
     console.log(submission); // Grabbing all of submisstion
 
+    let assignment = null;
+    for (let j = 0; j < ag.assignments.length; j++) {
+        if (ag.assignments[j].id === submission.assignment_id) {
+            assignment = ag.assignments[j]
+        }
+        console.log(assignment);
 
-    
+        // Tried using try/catch
+        try {
+            if (assignment === null) {
+                throw new Error("Assignment not found")
+            }
+        } catch (error) {
+            console.log("Something occured:", error.message);
+        }
+        
+    }
+
     
   }
   
