@@ -84,52 +84,89 @@ function getLearnerData(course, ag, submissions) {
             throw new Error("Assignments do not match this course");
         }
         //THIS IS CATCH DONT CHANGE YET PLZ
+        // Doesnt seem to work?? Check back later
+
+
+        const learners = {};
+        //Making current date as a string??
+        let today = "2025-12-15";
+
+        // Finding out which assignments match  
+        // TRY FOR OF ----> couldnt figure it out
+        for (let i = 0; i < submissions.length; i++) {
+            const submission = submissions[i];
+            const learnerId = submission.learner_id;
+
+            // F
+            let assignment = null;
+            for (let j = 0; j < ag.assignments.length; j++) {
+                if (ag.assignments[j].id === submission.assignment_id) {
+                    assignment = ag.assignments[j];
+                    break;
+                }
+            }
+
+            // If 
+            if (assignment === null) continue;
+
+            // Skip assignments if they are not yet due
+            if (assignment.due_at > today) continue;
+
+            // Make sure points are not zero
+            if (assignment.points_possible === 0) {
+                throw new Error("points_possible cannot be 0");
+            }
+
+            if (!learners[learnerId]) {
+                learners[learnerId] = {
+                    id: learnerId,
+                    tEarned: 0,
+                    tPossible: 0
+                };
+            }
+
+            let score = submission.submission.score;
+
+            // penalty of 10%
+            if (submission.submission.submitted_at > assignment.due_at) {
+                score = score - (assignment.points_possible * 0.1);
+            }
+
+            // No negatives
+            if (score < 0) {
+                score = 0;
+            }
+            console.log(score);
+            console.log(s);
+            // Figuring out precentages
+            learners[learnerId][assignment.id] =
+                score / assignment.points_possible;
+
+            // Add to totals for average
+            learners[learnerId].totalEarned += score;
+            learners[learnerId].totalPossible += assignment.points_possible;
+        }
+
+        // Build final result array
+        const result = [];
+
+        for (const learnerId in learners) {
+            const learner = learners[learnerId];
+
+            learner.avg =
+                learner.totalEarned / learner.totalPossible;
+
+            delete learner.totalEarned;
+            delete learner.totalPossible;
+
+            result.push(learner);
+        }
+
+        return result;
     } catch (error) {
-        console.error(error.message);
+        console.log(error.message);
+        return [];
 
-    }
-    // Doesnt seem to work?? Check back later
-
-    //////////////////////////// ASSIGNMENT/SUBMISSION SECTION /////////////////////////////
-    let learners = {};
-    //Making current date as a string??
-    let today = "2025-12-15";
-
-    // Finding out which assignments match  
-    // TRY FOR OF   
-    for (const s of submissions) {
-        let learnerId = s.learner_id;
-        const assignment = ag.assignments.find(
-            a => a.id === submissions.assignment_id
-        );
-        // if its not an assignment filter out
-        if (!assignment) {
-            continue; // filter out
-        } else {
-            console.log(assignment.name);
-        }
-        // if for assignments are not due
-        if (assignments.due_at > today) {
-            continue; //Filter out
-        }
-        // figuring out the points situation
-        if (assignment.points_possible === 0) {
-            continue;
-        }
-        // if (!learners[learnerId]) {
-        //     id: learnerId,
-        //     tEarned: 0,
-        //     tPossible: 0   
-        // };
-
-        //take 10% of late assignments
-        let score = s.submission.score;
-        if (s.submission.submitted_at > assignment.due_at) {
-            score -= assignment.points_possible * 0.1;
-        }
-        
-        score = Math.max(score, 0); //no negative numbers
-        console.log(score);
     }
 }
 
