@@ -80,13 +80,38 @@ function getLearnerData(course, ag, submissions) {
     //Figuring out if the assignments belongs to course
     // try/catch?? 
     try {
-        if (ag.course_id !== course.id){
+        if (ag.course_id !== course.id) {
             throw new Error("Assignments do not match this course");
         }
         //THIS IS CATCH DONT CHANGE YET PLZ
     } catch (error) {
         console.error(error.message);
-        
+
+    }
+    // Doesnt seem to work?? Check back later
+
+
+    let learners = {};
+    //Making current date as a string??
+    let today = "2025-12-15";
+
+    // Finding out which assignments match  
+    // TRY FOR OF   
+    for (const s of submissions) {
+        let learnerId = s.learner_id;
+        const assignment = ag.assignments.find(
+            a => a.id === submissions.assignment_id
+        );
+        if (!assignment) {
+            continue; // filter out
+        } else {
+            console.log(assignment.name);
+        }
+        // if for assignments are not due
+        if (assignments.due_at > today) {
+            continue; //Filter out
+        }
+
     }
 }
 
