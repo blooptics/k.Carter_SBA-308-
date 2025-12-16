@@ -90,7 +90,7 @@ function getLearnerData(course, ag, submissions) {
     }
     // Doesnt seem to work?? Check back later
 
-
+    //////////////////////////// ASSIGNMENT/SUBMISSION SECTION /////////////////////////////
     let learners = {};
     //Making current date as a string??
     let today = "2025-12-15";
@@ -102,6 +102,7 @@ function getLearnerData(course, ag, submissions) {
         const assignment = ag.assignments.find(
             a => a.id === submissions.assignment_id
         );
+        // if its not an assignment filter out
         if (!assignment) {
             continue; // filter out
         } else {
@@ -111,7 +112,24 @@ function getLearnerData(course, ag, submissions) {
         if (assignments.due_at > today) {
             continue; //Filter out
         }
+        // figuring out the points situation
+        if (assignment.points_possible === 0) {
+            continue;
+        }
+        // if (!learners[learnerId]) {
+        //     id: learnerId,
+        //     tEarned: 0,
+        //     tPossible: 0   
+        // };
 
+        //take 10% of late assignments
+        let score = s.submission.score;
+        if (s.submission.submitted_at > assignment.due_at) {
+            score -= assignment.points_possible * 0.1;
+        }
+        
+        score = Math.max(score, 0); //no negative numbers
+        console.log(score);
     }
 }
 
